@@ -17,6 +17,7 @@ st.set_page_config(page_title="ChartBot", layout="wide")
 st.title("📊 ChartBot - Ask for Any Chart")
 
 # Load Excel file from a consistent working local path (same as App 1)
+# Load Excel file from correct path
 file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidas.xlsx"
 try:
     if not os.path.exists(file_path):
