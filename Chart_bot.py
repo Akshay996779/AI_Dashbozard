@@ -12,16 +12,14 @@ genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # Load Excel file
-#file_path = "D:\Chartbot\Adidasd.xlsx"
-
+file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidasd.xlsx"
 try:
-    df = pd.read_excel(Adidasd.xlsx)
+    df = pd.read_excel(file_path)
 except FileNotFoundError:
-    st.error(f"Error: File not found at {Adidasd.xlsx}")
+    st.error(f"Error: File not found at {file_path}")
     st.stop()
 
 df["Month_Year"] = df["InvoiceDate"].dt.strftime("%b'%y")
-
 
 # Prepare Month-Year column
 if "InvoiceDate" in df.columns:
@@ -75,3 +73,4 @@ If appropriate, create subplots, dual axes, or advanced chart types.
             st.error("❌ Gemini could not generate a chart. Try a more specific request.")
     except Exception as e:
         st.error(f"❌ Gemini Chart Error: {e}")
+
