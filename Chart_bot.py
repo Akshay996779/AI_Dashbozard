@@ -12,12 +12,15 @@ genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # Load Excel file
-file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidas.xlsx"
+file_path = "C:/Users/Akshay Rokade/Downloads/Python dashboard/Adidas.xlsx"
 try:
     df = pd.read_excel(file_path)
 except FileNotFoundError:
     st.error(f"Error: File not found at {file_path}")
     st.stop()
+
+df["Month_Year"] = df["InvoiceDate"].dt.strftime("%b'%y")
+
 
 # Prepare Month-Year column
 if "InvoiceDate" in df.columns:
