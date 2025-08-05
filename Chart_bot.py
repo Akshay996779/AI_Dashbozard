@@ -16,7 +16,7 @@ st.set_page_config(page_title="ChartBot", layout="wide")
 st.title("📊 ChartBot - Ask for Any Chart")
 
 # Load Excel file directly from local path
-file_path = ""C:\Users\Akshay Rokade\Downloads\Chartbot\Adidasd.xlsx""
+file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidasd.xlsx"
 try:
     df = pd.read_excel(file_path)
 except FileNotFoundError:
@@ -75,3 +75,4 @@ If appropriate, create subplots, dual axes, or advanced chart types.
             st.error("❌ Gemini could not generate a chart. Try a more specific request.")
     except Exception as e:
         st.error(f"❌ Gemini Chart Error: {e}")
+
