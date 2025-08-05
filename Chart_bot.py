@@ -15,22 +15,16 @@ model = genai.GenerativeModel("models/gemini-1.5-flash")
 st.set_page_config(page_title="ChartBot", layout="wide")
 st.title("📊 ChartBot - Ask for Any Chart")
 
-# Try file uploader, fallback to local file if none uploaded
-uploaded_file = st.file_uploader("📤 Upload Excel File", type=["xlsx"])
-if uploaded_file is not None:
-    try:
-        df = pd.read_excel(uploaded_file)
-    except Exception as e:
-        st.error(f"Error reading the uploaded file: {e}")
-        st.stop()
-else:
-    fallback_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidas.xlsx"
-    try:
-        df = pd.read_excel(fallback_path)
-        st.info(f"✅ Using fallback file from: {fallback_path}")
-    except FileNotFoundError:
-        st.error("❌ No file uploaded and fallback file not found.")
-        st.stop()
+# Load Excel file directly from local path
+file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidasd.xlsx"
+try:
+    df = pd.read_excel(file_path)
+except FileNotFoundError:
+    st.error(f"❌ File not found at {file_path}")
+    st.stop()
+except Exception as e:
+    st.error(f"❌ Error reading Excel file: {e}")
+    st.stop()
 
 # Prepare Month-Year column
 if "InvoiceDate" in df.columns:
