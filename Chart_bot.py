@@ -11,10 +11,11 @@ import contextlib
 genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
-# File uploader for Excel file
+# Streamlit UI setup
 st.set_page_config(page_title="ChartBot", layout="wide")
 st.title("📊 ChartBot - Ask for Any Chart")
 
+# Try file uploader, fallback to local file if none uploaded
 uploaded_file = st.file_uploader("📤 Upload Excel File", type=["xlsx"])
 if uploaded_file is not None:
     try:
@@ -23,8 +24,13 @@ if uploaded_file is not None:
         st.error(f"Error reading the uploaded file: {e}")
         st.stop()
 else:
-    st.warning("⚠️ Please upload an Excel file to continue.")
-    st.stop()
+    fallback_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidas.xlsx"
+    try:
+        df = pd.read_excel(fallback_path)
+        st.info(f"✅ Using fallback file from: {fallback_path}")
+    except FileNotFoundError:
+        st.error("❌ No file uploaded and fallback file not found.")
+        st.stop()
 
 # Prepare Month-Year column
 if "InvoiceDate" in df.columns:
@@ -66,7 +72,6 @@ If appropriate, create subplots, dual axes, or advanced chart types.
 
         if "fig =" in chart_code:
             try:
-                # Suppress any print or fig.show() outputs
                 with contextlib.redirect_stdout(io.StringIO()):
                     exec(chart_code, globals())
                 st.plotly_chart(fig, use_container_width=True)
