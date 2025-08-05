@@ -8,16 +8,15 @@ import io
 import contextlib
 import os
 
-# Configure Gemini
+# ✅ Configure Gemini
 genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
-# Streamlit UI setup
+# ✅ Streamlit setup
 st.set_page_config(page_title="ChartBot", layout="wide")
 st.title("📊 ChartBot - Ask for Any Chart")
 
-# Load Excel file from a consistent working local path (same as App 1)
-# Load Excel file from correct path
+# ✅ Load Excel from local path (no manual upload)
 file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidas.xlsx"
 try:
     if not os.path.exists(file_path):
@@ -30,15 +29,15 @@ except Exception as e:
     st.error(f"❌ Error reading Excel file: {e}")
     st.stop()
 
-# Prepare Month-Year column
+# ✅ Add Month-Year if InvoiceDate exists
 if "InvoiceDate" in df.columns:
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"], errors="coerce")
     df["Month_Year"] = df["InvoiceDate"].dt.strftime("%b'%y")
 
-# Display last updated time
+# ✅ Timestamp
 st.write(f"Last updated: {datetime.datetime.now().strftime('%d %B %Y')}")
 
-# Text input for chart request
+# ✅ Input: ask for chart
 st.header("🧠 Ask for a Chart")
 chart_request = st.text_area("Describe the chart you want (e.g., bar chart of TotalSales by Region):")
 
@@ -64,9 +63,9 @@ If appropriate, create subplots, dual axes, or advanced chart types.
         chart_response = model.generate_content(chart_prompt)
         chart_code = chart_response.text.strip()
 
-        # Extract only the code block if wrapped with triple backticks
+        # Remove markdown wrapper if present
         if "```" in chart_code:
-            chart_code = chart_code.split("```python")[-1].split("```")[-2].strip()
+            chart_code = chart_code.split("```python")[-1].split("```")[0].strip()
 
         if "fig =" in chart_code:
             try:
