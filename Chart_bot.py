@@ -1,80 +1,72 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-import datetime
 import google.generativeai as genai
-import io
-import contextlib
-import os
 
-# ✅ Configure Gemini
+# Configure Gemini
 genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
-# ✅ Streamlit setup
-st.set_page_config(page_title="ChartBot", layout="wide")
-st.title("📊 ChartBot - Ask for Any Chart")
-
-# ✅ Load Excel from local path (no manual upload)
-file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidas.xlsx"
+# Load Excel file
+file_path = "C:/Users/Akshay Rokade/Downloads/Python dashboard/Adidas.xlsx"
 try:
-    if not os.path.exists(file_path):
-        raise FileNotFoundError
     df = pd.read_excel(file_path)
 except FileNotFoundError:
-    st.error(f"❌ Local file not found at: {file_path}")
-    st.stop()
-except Exception as e:
-    st.error(f"❌ Error reading Excel file: {e}")
+    st.error(f"Error: File not found at {file_path}")
     st.stop()
 
-# ✅ Add Month-Year if InvoiceDate exists
-if "InvoiceDate" in df.columns:
-    df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"], errors="coerce")
-    df["Month_Year"] = df["InvoiceDate"].dt.strftime("%b'%y")
+# Prepare Month-Year column
+df["Month_Year"] = df["InvoiceDate"].dt.strftime("%b'%y")
 
-# ✅ Timestamp
-st.write(f"Last updated: {datetime.datetime.now().strftime('%d %B %Y')}")
+# Streamlit Page
+st.set_page_config(page_title="AI Chart Generator", layout="wide")
+st.title("AI Chart Generator (Gemini)")
 
-# ✅ Input: ask for chart
-st.header("🧠 Ask for a Chart")
-chart_request = st.text_area("Describe the chart you want (e.g., bar chart of TotalSales by Region):")
+# -------- Gemini Chart Only ----------
+st.sidebar.header("📊 Ask for a Chart")
+chart_request = st.sidebar.text_area("Describe the chart (e.g., bar chart of TotalSales by Region):")
 
-if st.button("Generate Chart") and chart_request:
+if st.sidebar.button("Generate Chart") and chart_request:
     chart_prompt = f"""
 You are a Python data visualization assistant.
 
-Using this pandas DataFrame with columns:
+Based on this pandas DataFrame with the following columns:
 {', '.join(df.columns)}
 
-Generate valid and visually appealing Python code using Plotly (express or graph_objects) to visualize this request:
-\"{chart_request}\"
-
+Write valid Python code using Plotly Express (px) to plot a {chart_request}.
 Use 'df' as the DataFrame.
-Use a qualitative color palette like 'Plotly' or 'D3' to assign different colors to categorical variables.
-Ensure the chart is highly attractive, clear, and uses professional formatting with labels, titles, hover tooltips, layout tweaks, legends.
-Remove all background grid lines from the chart.
-Avoid calling fig.show().
-Use best practices to improve readability and aesthetics.
-If appropriate, create subplots, dual axes, or advanced chart types.
+Do not include import statements or display commands.
+Just return the code starting with: fig = px...
+
+Example output:
+fig = px.bar(df, x='Region', y='TotalSales')
 """
     try:
         chart_response = model.generate_content(chart_prompt)
         chart_code = chart_response.text.strip()
 
-        # Remove markdown wrapper if present
-        if "```" in chart_code:
-            chart_code = chart_code.split("```python")[-1].split("```")[0].strip()
-
-        if "fig =" in chart_code:
+        if "fig = px." in chart_code:
+            st.sidebar.success("Chart generated successfully!")
+            st.code(chart_code, language="python")
             try:
-                with contextlib.redirect_stdout(io.StringIO()):
-                    exec(chart_code, globals())
+                exec(chart_code, globals())  # Executes code to create 'fig'
                 st.plotly_chart(fig, use_container_width=True)
             except Exception as plot_err:
                 st.error(f"❌ Error rendering chart: {plot_err}")
         else:
-            st.error("❌ Gemini could not generate a chart. Try a more specific request.")
+            st.sidebar.error("❌ Gemini could not generate a valid chart.")
     except Exception as e:
-        st.error(f"❌ Gemini Chart Error: {e}")
+        st.sidebar.error(f"Gemini Chart Error: {e}")
+
+# ------------------ ALL BELOW COMMENTED OUT --------------------
+# st.sidebar.header("🔎 Apply Filters")
+# region_filter = st.sidebar.selectbox("Select Region", ["All"] + sorted(df["Region"].dropna().unique()))
+# ...
+# st.markdown("### 📊 Total Sales by Retailer")
+# fig1 = px.bar(filtered_df, x="Retailer", y="TotalSales", ...)
+# st.plotly_chart(fig1, use_container_width=True)
+# ...
+# with st.expander("📄 View Filtered Dataset"):
+#     st.dataframe(filtered_df)
+# st.download_button("Download Raw Data", ...)
+
