@@ -15,13 +15,17 @@ model = genai.GenerativeModel("models/gemini-1.5-flash")
 st.set_page_config(page_title="ChartBot", layout="wide")
 st.title("📊 ChartBot - Ask for Any Chart")
 
-# Load Excel file directly from local path
+# Load Excel file from local path, or allow upload if not found
 file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidasd.xlsx"
 try:
     df = pd.read_excel(file_path)
 except FileNotFoundError:
-    st.error(f"❌ File not found at {file_path}")
-    st.stop()
+    st.warning("⚠️ Local file not found. Please upload the Excel file manually.")
+    uploaded_file = st.file_uploader("Upload your Excel file", type=["xlsx"])
+    if uploaded_file is not None:
+        df = pd.read_excel(uploaded_file)
+    else:
+        st.stop()
 except Exception as e:
     st.error(f"❌ Error reading Excel file: {e}")
     st.stop()
@@ -35,7 +39,7 @@ if "InvoiceDate" in df.columns:
 st.write(f"Last updated: {datetime.datetime.now().strftime('%d %B %Y')}")
 
 # Text input for chart request
-st.header("🧠 Ask for a Chart")
+st.header("Ask for a Chart")
 chart_request = st.text_area("Describe the chart you want (e.g., bar chart of TotalSales by Region):")
 
 if st.button("Generate Chart") and chart_request:
@@ -75,4 +79,5 @@ If appropriate, create subplots, dual axes, or advanced chart types.
             st.error("❌ Gemini could not generate a chart. Try a more specific request.")
     except Exception as e:
         st.error(f"❌ Gemini Chart Error: {e}")
+
 
