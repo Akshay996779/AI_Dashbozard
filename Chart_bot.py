@@ -16,7 +16,7 @@ st.set_page_config(page_title="ChartBot", layout="wide")
 st.title("📊 ChartBot - Ask for Any Chart")
 
 # Load Excel file directly from local path
-file_path = "https://github.com/Akshay996779/AI_Dashbozard/blob/main/Adidas.xlsx"
+file_path = ""C:\Users\Akshay Rokade\Downloads\Chartbot\Adidasd.xlsx""
 try:
     df = pd.read_excel(file_path)
 except FileNotFoundError:
