@@ -9,7 +9,8 @@ import contextlib
 import os
 
 # Configure Gemini
-genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
+#genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
+genai.configure(api_key="AIzaSyC0ZDB4BZ2AgO1r0oKhBM_Cy18CNqVlK3Y")
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # Streamlit UI setup
