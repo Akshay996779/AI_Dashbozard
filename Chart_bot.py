@@ -12,7 +12,8 @@ genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # Load Excel file
-file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidasd.xlsx"
+file_path = "D:\Chartbot\Adidasd.xlsx"
+
 try:
     df = pd.read_excel(file_path)
 except FileNotFoundError:
