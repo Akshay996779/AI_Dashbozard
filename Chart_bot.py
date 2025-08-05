@@ -6,6 +6,7 @@ import datetime
 import google.generativeai as genai
 import io
 import contextlib
+import os
 
 # Configure Gemini
 genai.configure(api_key="AIzaSyDcgtW4LS1Qyn2eO8FMI13cCGLeJOhOYn4")
@@ -15,9 +16,11 @@ model = genai.GenerativeModel("models/gemini-1.5-flash")
 st.set_page_config(page_title="ChartBot", layout="wide")
 st.title("📊 ChartBot - Ask for Any Chart")
 
-# Load Excel file from local path only
-file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidasd.xlsx"
+# Load Excel file from a consistent working local path (same as App 1)
+file_path = "C:/Users/Akshay Rokade/Downloads/Chartbot/Adidas.xlsx"
 try:
+    if not os.path.exists(file_path):
+        raise FileNotFoundError
     df = pd.read_excel(file_path)
 except FileNotFoundError:
     st.error(f"❌ Local file not found at: {file_path}")
